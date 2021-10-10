@@ -12,6 +12,7 @@ export class UsersService {
     this.collectionName = dbService.collections.users;
     this.collectionRef = dbService.getCollection(this.collectionName);
   }
+
   async create(createUserDto: CreateUserDto) {
     const result = await this.dbService.createDocument<any>(
       this.collectionName,
