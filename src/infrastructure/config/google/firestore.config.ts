@@ -17,7 +17,7 @@ export const firestore = (): FirestoreConfig => ({
     customers: process.env.GCP_FIRESTORE_COLLECTION_CUSTOMERS,
     issues: process.env.GCP_FIRESTORE_COLLECTION_ISSUES,
     counter_logs: process.env.GCP_FIRESTORE_COLLECTION_COUNTER_LOGS,
-    requests: process.env.GCP_FIRESTORE_COLLECTION_CUSTOMERS,
-    users: process.env.GCP_FIRESTORE_COLLECTION_CUSTOMERS,
+    requests: process.env.GCP_FIRESTORE_COLLECTION_REQUESTS,
+    users: process.env.GCP_FIRESTORE_COLLECTION_USERS,
   },
 });

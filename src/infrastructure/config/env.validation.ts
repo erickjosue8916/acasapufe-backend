@@ -3,6 +3,7 @@ import { Environment } from './env.config';
 
 import {
   IsEnum,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -17,16 +18,28 @@ class EnvironmentVariables {
   PORT: number;
 
   @IsString()
+  @IsNotEmpty()
   GCP_FIRESTORE_PROJECT_ID: string;
 
   @IsString()
+  @IsNotEmpty()
   GCP_FIRESTORE_COLLECTION_CUSTOMERS: string;
 
   @IsString()
+  @IsNotEmpty()
   GCP_FIRESTORE_COLLECTION_ISSUES: string;
 
   @IsString()
+  @IsNotEmpty()
   GCP_FIRESTORE_COLLECTION_COUNTER_LOGS: string;
+
+  @IsString()
+  @IsNotEmpty()
+  GCP_FIRESTORE_COLLECTION_REQUESTS: string;
+
+  @IsString()
+  @IsNotEmpty()
+  GCP_FIRESTORE_COLLECTION_USERS: string;
 
   @IsString()
   @IsOptional()
