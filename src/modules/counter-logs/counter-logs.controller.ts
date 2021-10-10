@@ -12,7 +12,7 @@ import { CounterLogsService } from './counter-logs.service';
 import { CreateCounterLogDto } from './dto/create-counter-log.dto';
 import { UpdateCounterLogDto } from './dto/update-counter-log.dto';
 
-@Controller('counter-logs')
+@Controller('api/v1/counter-logs')
 @ApiTags('counter-logs')
 export class CounterLogsController {
   constructor(private readonly counterLogsService: CounterLogsService) {}

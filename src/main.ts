@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { swaggerSetup } from './infrastructure/swagger';
 import { AppModule } from './app.module';
 import { ValidationRequestPipe } from './infrastructure/pipes/validation-request.pipe';
+import { VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   try {
@@ -11,6 +12,8 @@ async function bootstrap() {
     swaggerSetup(app, `docs`);
 
     app.useGlobalPipes(new ValidationRequestPipe());
+
+    app.enableCors();
 
     await app.listen(port, () => {
       console.log(`Server Running on port: ${port}`);

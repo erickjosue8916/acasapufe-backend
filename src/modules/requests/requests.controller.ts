@@ -12,7 +12,7 @@ import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
-@Controller('requests')
+@Controller('api/v1/requests')
 @ApiTags('requests')
 export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
@@ -29,16 +29,16 @@ export class RequestsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.requestsService.findOne(+id);
+    return this.requestsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRequestDto: UpdateRequestDto) {
-    return this.requestsService.update(+id, updateRequestDto);
+    return this.requestsService.update(id, updateRequestDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.requestsService.remove(+id);
+    return this.requestsService.remove(id);
   }
 }

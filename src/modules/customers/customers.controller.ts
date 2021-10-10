@@ -7,13 +7,14 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { CustomerByIdPipe } from './pipes/customer-by-id.pipe';
 
 @ApiTags('customers')
-@Controller('customers')
+@Controller('api/v1/customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
@@ -28,8 +29,12 @@ export class CustomersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.customersService.findOne(id);
+  @ApiParam({
+    name: 'id',
+  })
+  findOne(@Param('id', CustomerByIdPipe) customerEntity: any) {
+    console.log(customerEntity);
+    return 'ok';
   }
 
   @Patch(':id')
