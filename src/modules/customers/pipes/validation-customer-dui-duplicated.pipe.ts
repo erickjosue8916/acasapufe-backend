@@ -6,9 +6,10 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { MainDbService } from 'src/common/main-db/main-db.service';
+import { CreateCustomerDto } from '../dto/create-customer.dto';
 
 @Injectable()
-export class CustomerByIdPipe implements PipeTransform {
+export class ValidationCustomerDuiDuplicatedPipe implements PipeTransform {
   private collectionName: string;
   private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
@@ -18,16 +19,19 @@ export class CustomerByIdPipe implements PipeTransform {
   }
 
   async transform(
-    customerId: string,
+    customerData: CreateCustomerDto,
     { metatype }: ArgumentMetadata,
-  ): Promise<
-    FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>
-  > {
-    const customer = await this.collectionRef.doc(customerId).get();
-    const data = await this.dbService.getDataFromDocument(customer);
-    if (!customer.exists) {
-      throw new HttpException(`Customer not found`, HttpStatus.NOT_FOUND);
+  ) {
+    const queryResult = await this.collectionRef
+      .where('dui', '==', customerData.dui)
+      .get();
+    const items = await this.dbService.parseFirestoreItemsResponse(queryResult);
+    if (items.length) {
+      throw new HttpException(
+        `Dui already registered for a customer`,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
-    return customer;
+    return customerData;
   }
 }

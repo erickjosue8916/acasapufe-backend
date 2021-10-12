@@ -10,7 +10,9 @@ import {
 import { RequestsService } from './requests.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import { ValidationCustomerDuiDuplicatedPipe } from '../customers/pipes/validation-customer-dui-duplicated.pipe';
+import { RequestByIdPipe } from './pipes/request-by-id.pipe';
 
 @Controller('api/v1/requests')
 @ApiTags('requests')
@@ -18,7 +20,10 @@ export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
   @Post()
-  create(@Body() createRequestDto: CreateRequestDto) {
+  create(
+    @Body(ValidationCustomerDuiDuplicatedPipe)
+    createRequestDto: CreateRequestDto,
+  ) {
     return this.requestsService.create(createRequestDto);
   }
 
@@ -33,7 +38,10 @@ export class RequestsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRequestDto: UpdateRequestDto) {
+  update(
+    @Param('id', RequestByIdPipe) id: string,
+    @Body() updateRequestDto: UpdateRequestDto,
+  ) {
     return this.requestsService.update(id, updateRequestDto);
   }
 

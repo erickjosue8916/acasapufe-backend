@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateRequestDto {
   @ApiProperty({
-    name: 'name',
+    name: 'firstName',
     example: 'User',
   })
   @IsString()

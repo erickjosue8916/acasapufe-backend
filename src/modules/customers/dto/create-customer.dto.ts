@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateCustomerDto {
   @ApiProperty({
-    name: 'name',
+    name: 'firstName',
     example: 'User',
   })
   @IsString()
@@ -44,7 +44,7 @@ export class CreateCustomerDto {
 
   @IsNumber()
   @ApiProperty({
-    name: 'oderReference',
+    name: 'orderReference',
     example: 1,
   })
   orderReference: number;

@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { MainDbService } from 'src/common/main-db/main-db.service';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
+import { RequestStatus } from './entities/request.entity';
 
 @Injectable()
 export class RequestsService {
@@ -16,9 +17,12 @@ export class RequestsService {
 
   async create(createRequestDto: CreateRequestDto) {
     const id = createRequestDto.dui;
+    const now = dayjs().format();
     const payload = {
       ...createRequestDto,
-      createAt: dayjs().format(),
+      createAt: now,
+      status: RequestStatus.PENDING,
+      lastUpdate: now,
     };
     const result = await this.dbService.createDocumentWithCustomId<any>(
       this.collectionName,
@@ -43,11 +47,16 @@ export class RequestsService {
   }
 
   async update(id: string, updateRequestDto: UpdateRequestDto) {
+    const now = dayjs().format();
     const document = await this.dbService.getDocumentById(
       this.collectionName,
       id,
     );
-    const result = await this.dbService.update(document, updateRequestDto);
+    const payload = {
+      lastUpdate: now,
+      ...updateRequestDto,
+    };
+    const result = await this.dbService.update(document, payload);
     return result;
   }
 

@@ -11,12 +11,12 @@ export class CreateUserDto {
   type: UserTypes;
 
   @ApiProperty({
-    name: 'name',
+    name: 'firstName',
     example: 'User',
   })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  firstName: string;
 
   @IsString()
   @ApiProperty({

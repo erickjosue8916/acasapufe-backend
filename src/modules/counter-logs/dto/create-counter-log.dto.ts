@@ -1,8 +1,15 @@
+import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt } from 'class-validator';
+import {
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreateCounterLogDto {
-  @IsInt()
+  @IsNumber()
   @ApiProperty({
     name: 'count',
     examples: [1000, 2000, 3000],

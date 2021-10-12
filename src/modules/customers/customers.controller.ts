@@ -7,11 +7,18 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiParam,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { CustomerByIdPipe } from './pipes/customer-by-id.pipe';
+import { ValidationCustomerDuiDuplicatedPipe } from './pipes/validation-customer-dui-duplicated.pipe';
 
 @ApiTags('customers')
 @Controller('api/v1/customers')
@@ -19,7 +26,10 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Post()
-  create(@Body() createCustomerDto: CreateCustomerDto) {
+  create(
+    @Body(ValidationCustomerDuiDuplicatedPipe)
+    createCustomerDto: CreateCustomerDto,
+  ) {
     return this.customersService.create(createCustomerDto);
   }
 
@@ -38,6 +48,7 @@ export class CustomersController {
   }
 
   @Patch(':id')
+  @ApiHideProperty()
   update(
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
@@ -48,5 +59,20 @@ export class CustomersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.customersService.remove(id);
+  }
+
+  @ApiParam({
+    name: 'customerId',
+  })
+  @Post(':id/counter-logs')
+  async createLog(
+    @Param('id', CustomerByIdPipe) customerEntity: any,
+    @Body() counterLog: CreateCounterLogDto,
+  ) {
+    const result = await this.customersService.createCounterLog(
+      customerEntity,
+      counterLog,
+    );
+    return result;
   }
 }

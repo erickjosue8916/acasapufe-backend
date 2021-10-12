@@ -29,7 +29,7 @@ export class CounterLogsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.counterLogsService.findOne(+id);
+    return this.counterLogsService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class CounterLogsController {
     @Param('id') id: string,
     @Body() updateCounterLogDto: UpdateCounterLogDto,
   ) {
-    return this.counterLogsService.update(+id, updateCounterLogDto);
+    return this.counterLogsService.update(id, updateCounterLogDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.counterLogsService.remove(+id);
+    return this.counterLogsService.remove(id);
   }
 }

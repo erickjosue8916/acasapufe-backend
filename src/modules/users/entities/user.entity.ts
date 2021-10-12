@@ -11,7 +11,7 @@ export class User {
   id: string;
   dui: string;
   birthDate: string;
-  name: string;
+  firstName: string;
   type: UserTypes;
   lastName: string;
   username: string;
@@ -22,7 +22,7 @@ export class User {
       id: this.id,
       dui: this.dui,
       birthDate: this.birthDate,
-      name: this.name,
+      firstName: this.firstName,
       type: this.type,
       lastName: this.lastName,
       username: this.username,
@@ -33,7 +33,7 @@ export class User {
   static getFromDto(data: CreateUserDto): User {
     const user = new User();
     user.dui = data.dui;
-    user.name = data.name;
+    user.firstName = data.firstName;
     user.birthDate = data.birthDate;
     user.lastName = data.lastName;
     user.username = data.username;
