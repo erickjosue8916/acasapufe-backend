@@ -8,6 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import {
+  ApiExcludeEndpoint,
   ApiHideProperty,
   ApiParam,
   ApiProperty,
@@ -48,7 +49,7 @@ export class CustomersController {
   }
 
   @Patch(':id')
-  @ApiHideProperty()
+  @ApiExcludeEndpoint()
   update(
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
@@ -57,12 +58,13 @@ export class CustomersController {
   }
 
   @Delete(':id')
+  @ApiExcludeEndpoint()
   remove(@Param('id') id: string) {
     return this.customersService.remove(id);
   }
 
   @ApiParam({
-    name: 'customerId',
+    name: 'id',
   })
   @Post(':id/counter-logs')
   async createLog(
@@ -74,5 +76,32 @@ export class CustomersController {
       counterLog,
     );
     return result;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Get(':id/counter-logs')
+  async getCounterLogs(@Param('id', CustomerByIdPipe) customer) {
+    const result = await this.customersService.getCounterLogs(customer);
+    return result;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Get(':id/counter-logs/char')
+  async getCounterLogsChar(@Param('id', CustomerByIdPipe) customer) {
+    const result = await this.customersService.getCounterLogs(customer);
+    const char = result.reduce(
+      (prev, current, index) => {
+        const [year, month] = current.id.split('-');
+        prev.months[index] = `${year}/${month}`;
+        prev.values[index] = current.count;
+        return prev;
+      },
+      { months: [], values: [] },
+    );
+    return char;
   }
 }

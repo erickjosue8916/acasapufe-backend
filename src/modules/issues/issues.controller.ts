@@ -10,7 +10,7 @@ import {
 import { IssuesService } from './issues.service';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 
 @Controller('api/v1/issues')
 @ApiTags('issues')
@@ -33,11 +33,13 @@ export class IssuesController {
   }
 
   @Patch(':id')
+  @ApiExcludeEndpoint()
   update(@Param('id') id: string, @Body() updateIssueDto: UpdateIssueDto) {
     return this.issuesService.update(id, updateIssueDto);
   }
 
   @Delete(':id')
+  @ApiExcludeEndpoint()
   remove(@Param('id') id: string) {
     return this.issuesService.remove(id);
   }

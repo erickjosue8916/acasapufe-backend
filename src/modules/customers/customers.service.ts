@@ -108,9 +108,18 @@ export class CustomersService {
     const customerRef = await this.collectionRef.doc(customer.id);
     this.dbService.update(customerRef, customerUpdatePayload);
     const customerWithDataUpdated = Object.assign(
-      customer,
+      customer.data(),
       customerUpdatePayload,
     );
     return customerWithDataUpdated;
+  }
+
+  async getCounterLogs(
+    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+  ) {
+    const collectionPath = `${this.collectionName}/${customer.id}/${this.collectionCounterLogs}`;
+    const result = await this.dbService.getCollection(collectionPath).get();
+    const items = this.dbService.parseFirestoreItemsResponse(result);
+    return items;
   }
 }

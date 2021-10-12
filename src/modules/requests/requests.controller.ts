@@ -10,7 +10,7 @@ import {
 import { RequestsService } from './requests.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { ValidationCustomerDuiDuplicatedPipe } from '../customers/pipes/validation-customer-dui-duplicated.pipe';
 import { RequestByIdPipe } from './pipes/request-by-id.pipe';
 
@@ -46,6 +46,7 @@ export class RequestsController {
   }
 
   @Delete(':id')
+  @ApiExcludeEndpoint()
   remove(@Param('id') id: string) {
     return this.requestsService.remove(id);
   }
