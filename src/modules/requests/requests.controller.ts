@@ -13,6 +13,7 @@ import { UpdateRequestDto } from './dto/update-request.dto';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { ValidationCustomerDuiDuplicatedPipe } from '../customers/pipes/validation-customer-dui-duplicated.pipe';
 import { RequestByIdPipe } from './pipes/request-by-id.pipe';
+import { RequestStatus } from './entities/request.entity';
 
 @Controller('api/v1/requests')
 @ApiTags('requests')
@@ -39,10 +40,10 @@ export class RequestsController {
 
   @Patch(':id')
   update(
-    @Param('id', RequestByIdPipe) id: string,
-    @Body() updateRequestDto: UpdateRequestDto,
+    @Param('id', RequestByIdPipe) request,
+    @Param('status') status: RequestStatus,
   ) {
-    return this.requestsService.update(id, updateRequestDto);
+    return this.requestsService.updateStatus(request, status);
   }
 
   @Delete(':id')

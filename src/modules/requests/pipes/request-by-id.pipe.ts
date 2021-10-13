@@ -18,8 +18,8 @@ export class RequestByIdPipe implements PipeTransform {
   }
 
   async transform(requestId: string, { metatype }: ArgumentMetadata) {
-    const requests = await this.collectionRef.doc(requestId).get();
-    if (!requests.exists) {
+    const request = await this.collectionRef.doc(requestId).get();
+    if (!request.exists) {
       throw new HttpException(`Request not found`, HttpStatus.NOT_FOUND);
     }
     return requestId;

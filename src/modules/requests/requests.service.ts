@@ -4,13 +4,18 @@ import { UpdateRequestDto } from './dto/update-request.dto';
 import { MainDbService } from 'src/common/main-db/main-db.service';
 import * as dayjs from 'dayjs';
 import { RequestStatus } from './entities/request.entity';
+import { CustomersService } from '../customers/customers.service';
+import { CreateCustomerDto } from '../customers/dto/create-customer.dto';
 
 @Injectable()
 export class RequestsService {
   private collectionName: string;
   private collectionRef;
 
-  constructor(private readonly dbService: MainDbService) {
+  constructor(
+    private readonly dbService: MainDbService,
+    private readonly customersService: CustomersService,
+  ) {
     this.collectionName = dbService.collections.requests;
     this.collectionRef = dbService.getCollection(this.collectionName);
   }
@@ -44,6 +49,18 @@ export class RequestsService {
 
   findOne(id: string) {
     return `This action returns a #${id} request`;
+  }
+
+  async updateStatus(
+    request: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+    status: RequestStatus,
+  ) {
+    await this.update(request.id, { status });
+    if (status === RequestStatus.APPROVED) {
+      const data = request.data();
+      await this.customersService.create(data as CreateCustomerDto);
+    }
+    return true;
   }
 
   async update(id: string, updateRequestDto: UpdateRequestDto) {
