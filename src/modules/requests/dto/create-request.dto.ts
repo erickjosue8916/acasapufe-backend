@@ -1,7 +1,7 @@
-import { ApiBody, ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateCustomerDto {
+export class CreateRequestDto {
   @ApiProperty({
     name: 'firstName',
     example: 'User',
@@ -41,11 +41,4 @@ export class CreateCustomerDto {
   })
   @IsNotEmpty()
   locationReference: string;
-
-  @IsNumber()
-  @ApiProperty({
-    name: 'orderReference',
-    example: 1,
-  })
-  orderReference: number;
 }
