@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
+import { CreateIssueDto } from '../issues/dto/create-issue.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserTypes } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -12,6 +13,7 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 export class CustomersService {
   private collectionName: string;
   private collectionCounterLogs: string;
+  private collectionIssues: string;
   private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
   constructor(
@@ -20,6 +22,7 @@ export class CustomersService {
   ) {
     this.collectionName = dbService.collections.customers;
     this.collectionCounterLogs = dbService.collections.customers;
+    this.collectionIssues = dbService.collections.issues;
     this.collectionRef = dbService.getCollection(this.collectionName);
   }
 
@@ -120,6 +123,40 @@ export class CustomersService {
     const collectionPath = `${this.collectionName}/${customer.id}/${this.collectionCounterLogs}`;
     const result = await this.dbService.getCollection(collectionPath).get();
     const items = this.dbService.parseFirestoreItemsResponse(result);
+    return items;
+  }
+
+  async createIssue(
+    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+    data: CreateIssueDto,
+  ) {
+    const customerId = customer.id;
+    const currentDate = dayjs().format('YYYY-MM-DD');
+    const payload = {
+      customerId,
+      ...data,
+      createAt: currentDate,
+      isResolved: false,
+    };
+    const newIssue = await this.dbService.createDocument(
+      this.collectionIssues,
+      payload,
+    );
+    const result = {
+      id: newIssue.id,
+      ...payload,
+    };
+    return result;
+  }
+
+  async getIssues(
+    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+  ) {
+    const response = await this.dbService
+      .getCollection(this.collectionIssues)
+      .where('customerId', '==', customer.id)
+      .get();
+    const items = this.dbService.parseFirestoreItemsResponse(response);
     return items;
   }
 }

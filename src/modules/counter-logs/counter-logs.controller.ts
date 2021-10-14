@@ -7,12 +7,13 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 import { CounterLogsService } from './counter-logs.service';
 import { CreateCounterLogDto } from './dto/create-counter-log.dto';
 import { UpdateCounterLogDto } from './dto/update-counter-log.dto';
 
 @Controller('api/v1/counter-logs')
+@ApiExcludeController()
 @ApiTags('counter-logs')
 export class CounterLogsController {
   constructor(private readonly counterLogsService: CounterLogsService) {}

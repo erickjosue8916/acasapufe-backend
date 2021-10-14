@@ -11,6 +11,8 @@ import {
 import {
   ApiBearerAuth,
   ApiExcludeEndpoint,
+  ApiHeader,
+  ApiHeaders,
   ApiHideProperty,
   ApiParam,
   ApiProperty,
@@ -32,6 +34,9 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   create(
     @Body(ValidationCustomerDuiDuplicatedPipe)
     createCustomerDto: CreateCustomerDto,
@@ -40,6 +45,9 @@ export class CustomersController {
   }
 
   @Get()
+  @ApiBearerAuth('Only Admin and Employee Logged')
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   findAll() {
     return this.customersService.findAll();
   }
@@ -95,10 +103,10 @@ export class CustomersController {
   @ApiParam({
     name: 'id',
   })
-  @ApiBearerAuth()
   @Get(':id/counter-logs/char')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.CUSTOMER)
   async getCounterLogsChar(@Param('id', CustomerByIdPipe) customer) {
     const result = await this.customersService.getCounterLogs(customer);
     const char = result.reduce(
@@ -111,5 +119,38 @@ export class CustomersController {
       { months: [], values: [] },
     );
     return char;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Post(':id/issues')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
+  async createIssue(
+    @Param('id', CustomerByIdPipe) customerEntity: any,
+    @Body() counterLog: CreateCounterLogDto,
+  ) {
+    const result = await this.customersService.createCounterLog(
+      customerEntity,
+      counterLog,
+    );
+    return result;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Get(':id/issues')
+  async getIssues(
+    @Param('id', CustomerByIdPipe) customerEntity: any,
+    @Body() counterLog: CreateCounterLogDto,
+  ) {
+    const result = await this.customersService.createCounterLog(
+      customerEntity,
+      counterLog,
+    );
+    return result;
   }
 }

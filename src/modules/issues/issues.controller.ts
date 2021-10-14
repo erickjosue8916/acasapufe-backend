@@ -17,11 +17,6 @@ import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}
 
-  @Post()
-  create(@Body() createIssueDto: CreateIssueDto) {
-    return this.issuesService.create(createIssueDto);
-  }
-
   @Get()
   findAll() {
     return this.issuesService.findAll();
