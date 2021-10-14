@@ -6,14 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiHideProperty,
   ApiParam,
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
+import { Role } from 'src/infrastructure/config/auth/role.enum';
+import { Roles } from 'src/infrastructure/config/auth/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -90,7 +95,10 @@ export class CustomersController {
   @ApiParam({
     name: 'id',
   })
+  @ApiBearerAuth()
   @Get(':id/counter-logs/char')
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   async getCounterLogsChar(@Param('id', CustomerByIdPipe) customer) {
     const result = await this.customersService.getCounterLogs(customer);
     const char = result.reduce(

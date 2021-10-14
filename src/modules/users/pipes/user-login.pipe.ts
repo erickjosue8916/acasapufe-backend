@@ -6,9 +6,10 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { MainDbService } from 'src/common/main-db/main-db.service';
+import { LoginDTO } from '../dto/login.dto';
 
 @Injectable()
-export class UserByIdPipe implements PipeTransform {
+export class UserLoginPipe implements PipeTransform {
   private collectionName: string;
   private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
@@ -17,15 +18,22 @@ export class UserByIdPipe implements PipeTransform {
     this.collectionRef = this.dbService.getCollection(this.collectionName);
   }
   async transform(
-    userId: string,
+    credentials: LoginDTO,
     metadata: ArgumentMetadata,
   ): Promise<
     FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>
   > {
-    const user = await this.collectionRef.doc(userId).get();
-    const data = await this.dbService.getDataFromDocument(user);
-    if (!user.exists) {
-      throw new HttpException(`Customer not found`, HttpStatus.NOT_FOUND);
+    const response = await this.collectionRef
+      .where('username', '==', credentials.username)
+      .get();
+    const [user] = await this.dbService.parseFirestoreItemsResponse(response);
+    if (!user) {
+      throw new HttpException(`User not found`, HttpStatus.NOT_FOUND);
+    }
+
+    const isInvalidPassword = user.password !== credentials.password;
+    if (isInvalidPassword) {
+      throw new HttpException(`Invalid Password!!!`, HttpStatus.UNAUTHORIZED);
     }
     return user;
   }

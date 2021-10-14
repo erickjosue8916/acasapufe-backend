@@ -10,6 +10,7 @@ import { CommonModule } from './common/common.module';
 import { IssuesModule } from './modules/issues/issues.module';
 import { RequestsModule } from './modules/requests/requests.module';
 import { CounterLogsModule } from './modules/counter-logs/counter-logs.module';
+import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,6 +24,7 @@ import { CounterLogsModule } from './modules/counter-logs/counter-logs.module';
     IssuesModule,
     RequestsModule,
     CounterLogsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

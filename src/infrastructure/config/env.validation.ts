@@ -46,6 +46,7 @@ class EnvironmentVariables {
   GOOGLE_APPLICATION_CREDENTIALS: string;
 
   @IsString()
+  @IsNotEmpty()
   JWT_SECRET_KEY: string;
 
   @IsNumber()
