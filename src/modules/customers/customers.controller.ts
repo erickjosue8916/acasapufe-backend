@@ -22,6 +22,7 @@ import { Role } from 'src/infrastructure/config/auth/role.enum';
 import { Roles } from 'src/infrastructure/config/auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
+import { CreateIssueDto } from '../issues/dto/create-issue.dto';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -130,11 +131,11 @@ export class CustomersController {
   @Roles(Role.CUSTOMER)
   async createIssue(
     @Param('id', CustomerByIdPipe) customerEntity: any,
-    @Body() counterLog: CreateCounterLogDto,
+    @Body() issue: CreateIssueDto,
   ) {
-    const result = await this.customersService.createCounterLog(
+    const result = await this.customersService.createIssue(
       customerEntity,
-      counterLog,
+      issue,
     );
     return result;
   }
@@ -143,14 +144,8 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/issues')
-  async getIssues(
-    @Param('id', CustomerByIdPipe) customerEntity: any,
-    @Body() counterLog: CreateCounterLogDto,
-  ) {
-    const result = await this.customersService.createCounterLog(
-      customerEntity,
-      counterLog,
-    );
+  async getIssues(@Param('id', CustomerByIdPipe) customerEntity: any) {
+    const result = await this.customersService.getIssues(customerEntity);
     return result;
   }
 }
