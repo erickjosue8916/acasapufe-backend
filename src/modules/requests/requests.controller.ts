@@ -10,7 +10,7 @@ import {
 import { RequestsService } from './requests.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
-import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ValidationCustomerDuiDuplicatedPipe } from '../customers/pipes/validation-customer-dui-duplicated.pipe';
 import { RequestByIdPipe } from './pipes/request-by-id.pipe';
 import { RequestStatus } from './entities/request.entity';
@@ -38,7 +38,16 @@ export class RequestsController {
     return this.requestsService.findOne(id);
   }
 
-  @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'Request Id saved in database',
+  })
+  @ApiParam({
+    name: 'status',
+    description: 'New Request Status',
+    enum: RequestStatus,
+  })
+  @Patch(':id/:status')
   update(
     @Param('id', RequestByIdPipe) request,
     @Param('status') status: RequestStatus,

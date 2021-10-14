@@ -57,8 +57,10 @@ export class RequestsService {
   ) {
     await this.update(request.id, { status });
     if (status === RequestStatus.APPROVED) {
-      const data = request.data();
-      await this.customersService.create(data as CreateCustomerDto);
+      const data = {
+        ...request.data(),
+      };
+      await this.customersService.create(data as unknown as CreateCustomerDto);
     }
     return true;
   }

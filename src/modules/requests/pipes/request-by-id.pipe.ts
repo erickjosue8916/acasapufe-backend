@@ -17,11 +17,11 @@ export class RequestByIdPipe implements PipeTransform {
     this.collectionRef = this.dbService.getCollection(this.collectionName);
   }
 
-  async transform(requestId: string, { metatype }: ArgumentMetadata) {
-    const request = await this.collectionRef.doc(requestId).get();
+  async transform(id: string, { metatype }: ArgumentMetadata) {
+    const request = await this.collectionRef.doc(id).get();
     if (!request.exists) {
       throw new HttpException(`Request not found`, HttpStatus.NOT_FOUND);
     }
-    return requestId;
+    return request;
   }
 }
