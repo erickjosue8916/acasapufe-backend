@@ -81,6 +81,9 @@ export class CustomersController {
     name: 'id',
   })
   @Post(':id/counter-logs')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.EMPLOYEE, Role.ADMIN)
   async createLog(
     @Param('id', CustomerByIdPipe) customerEntity: any,
     @Body() counterLog: CreateCounterLogDto,
@@ -96,6 +99,9 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/counter-logs')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async getCounterLogs(@Param('id', CustomerByIdPipe) customer) {
     const result = await this.customersService.getCounterLogs(customer);
     return result;
@@ -144,6 +150,9 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/issues')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async getIssues(@Param('id', CustomerByIdPipe) customerEntity: any) {
     const result = await this.customersService.getIssues(customerEntity);
     return result;
