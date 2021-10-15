@@ -6,7 +6,7 @@ export class LoginDTO {
   @IsNotEmpty()
   @ApiProperty({
     name: 'username',
-    example: 'user-123',
+    example: '000-000-000',
   })
   username: string;
 
@@ -14,7 +14,7 @@ export class LoginDTO {
   @IsNotEmpty()
   @ApiProperty({
     name: 'password',
-    example: '123',
+    example: '000-000-000',
   })
   password: string;
 }

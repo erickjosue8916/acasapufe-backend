@@ -14,34 +14,35 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { UserLoginPipe } from './pipes/user-login.pipe';
 import { LoginDTO } from './dto/login.dto';
+import { ValidationUserDuiDuplicatedPipe } from './pipes/validation-user-dui-duplicated.pipe';
 
 @ApiTags('users')
-@Controller('api/v1')
+@Controller('api/v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body(ValidationUserDuiDuplicatedPipe) createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  @Get('users')
+  @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get('users/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
-  @Patch('users/:id')
+  @Patch(':id')
   @ApiExcludeEndpoint()
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
-  @Delete('users/:id')
+  @Delete(':id')
   @ApiExcludeEndpoint()
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

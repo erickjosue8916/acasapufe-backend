@@ -35,9 +35,9 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Post()
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   create(
     @Body(ValidationCustomerDuiDuplicatedPipe)
     createCustomerDto: CreateCustomerDto,
@@ -46,9 +46,6 @@ export class CustomersController {
   }
 
   @Get()
-  // @ApiBearerAuth('Only Admin and Employee Logged')
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(Role.ADMIN, Role.EMPLOYEE)
   findAll() {
     return this.customersService.findAll();
   }
@@ -81,9 +78,9 @@ export class CustomersController {
     name: 'id',
   })
   @Post(':id/counter-logs')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(Role.EMPLOYEE, Role.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.EMPLOYEE, Role.ADMIN)
   async createLog(
     @Param('id', CustomerByIdPipe) customerEntity: any,
     @Body() counterLog: CreateCounterLogDto,
@@ -99,9 +96,9 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/counter-logs')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(Role.CUSTOMER)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async getCounterLogs(@Param('id', CustomerByIdPipe) customer) {
     const result = await this.customersService.getCounterLogs(customer);
     return result;
@@ -111,9 +108,9 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/counter-logs/char')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(Role.CUSTOMER)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async getCounterLogsChar(@Param('id', CustomerByIdPipe) customer) {
     const result = await this.customersService.getCounterLogs(customer);
     const char = result.reduce(
@@ -132,9 +129,9 @@ export class CustomersController {
     name: 'id',
   })
   @Post(':id/issues')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(Role.CUSTOMER)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async createIssue(
     @Param('id', CustomerByIdPipe) customerEntity: any,
     @Body() issue: CreateIssueDto,
@@ -150,9 +147,9 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/issues')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(Role.CUSTOMER)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async getIssues(@Param('id', CustomerByIdPipe) customerEntity: any) {
     const result = await this.customersService.getIssues(customerEntity);
     return result;
