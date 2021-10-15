@@ -22,6 +22,7 @@ export class RequestByIdPipe implements PipeTransform {
     if (!request.exists) {
       throw new HttpException(`Request not found`, HttpStatus.NOT_FOUND);
     }
-    return request;
+    const document = this.dbService.getDataFromDocument(request);
+    return document;
   }
 }

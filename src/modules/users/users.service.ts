@@ -29,8 +29,10 @@ export class UsersService {
     return items;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const query = await this.collectionRef.doc(id).get();
+    const result = await this.dbService.getDataFromDocument(query);
+    return result;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

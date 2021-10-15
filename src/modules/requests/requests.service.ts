@@ -47,8 +47,10 @@ export class RequestsService {
     return items;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} request`;
+  async findOne(id: string) {
+    const query = await this.collectionRef.doc(id).get();
+    const result = await this.dbService.getDataFromDocument(query);
+    return result;
   }
 
   async updateStatus(
