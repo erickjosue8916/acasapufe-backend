@@ -42,6 +42,11 @@ export class RequestsController {
     return this.requestsService.findAll();
   }
 
+  @Get('pending')
+  async getPending() {
+    return await this.requestsService.getPending();
+  }
+
   @Get(':id')
   async findOne(@Param('id', RequestByIdPipe) request) {
     return request;

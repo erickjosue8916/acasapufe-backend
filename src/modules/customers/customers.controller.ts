@@ -50,6 +50,11 @@ export class CustomersController {
     return this.customersService.findAll();
   }
 
+  @Get('pending')
+  getPending() {
+    return this.customersService.getPending();
+  }
+
   @Get(':id')
   @ApiParam({
     name: 'id',

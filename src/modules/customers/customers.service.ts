@@ -66,6 +66,14 @@ export class CustomersService {
     return items;
   }
 
+  async getPending() {
+    const result = await this.collectionRef
+      .where('monthlyCapturePending', '==', true)
+      .get();
+    const items = await this.dbService.parseFirestoreItemsResponse(result);
+    return items;
+  }
+
   async findOne(id: string) {
     const query = await this.collectionRef.doc(id).get();
     const result = await this.dbService.getDataFromDocument(query);
