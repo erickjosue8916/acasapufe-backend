@@ -7,14 +7,23 @@ import {
   Param,
   Delete,
   Version,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBody, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiExcludeEndpoint,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserLoginPipe } from './pipes/user-login.pipe';
 import { LoginDTO } from './dto/login.dto';
 import { ValidationUserDuiDuplicatedPipe } from './pipes/validation-user-dui-duplicated.pipe';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from 'src/infrastructure/config/auth/roles.decorator';
+import { Role } from 'src/infrastructure/config/auth/role.enum';
 
 @ApiTags('users')
 @Controller('api/v1/users')
@@ -27,6 +36,9 @@ export class UsersController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   findAll() {
     return this.usersService.findAll();
   }

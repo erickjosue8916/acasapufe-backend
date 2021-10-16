@@ -83,9 +83,6 @@ export class CustomersController {
     name: 'id',
   })
   @Post(':id/counter-logs')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Roles(Role.EMPLOYEE, Role.ADMIN)
   async createLog(
     @Param('id', CustomerByIdPipe) customerEntity: any,
     @Body() counterLog: CreateCounterLogDto,

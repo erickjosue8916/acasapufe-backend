@@ -38,16 +38,25 @@ export class RequestsController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   findAll() {
     return this.requestsService.findAll();
   }
 
   @Get('pending')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   async getPending() {
     return await this.requestsService.getPending();
   }
 
   @Get(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   async findOne(@Param('id', RequestByIdPipe) request) {
     return request;
   }

@@ -51,6 +51,12 @@ class EnvironmentVariables {
 
   @IsNumber()
   JWT_TOKEN_DURATION_MS: number;
+
+  @IsNumber()
+  BUSINESS_SERVICE_PRICE: number;
+
+  @IsNumber()
+  BUSINESS_SERVICE_PRICE_UNIT: number;
 }
 
 export const validateEnv = (config: Record<string, unknown>) => {

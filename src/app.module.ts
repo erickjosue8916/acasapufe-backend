@@ -11,6 +11,7 @@ import { IssuesModule } from './modules/issues/issues.module';
 import { RequestsModule } from './modules/requests/requests.module';
 import { CounterLogsModule } from './modules/counter-logs/counter-logs.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { InvoicesModule } from './modules/invoices/invoices.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +26,7 @@ import { AuthModule } from './modules/auth/auth.module';
     RequestsModule,
     CounterLogsModule,
     AuthModule,
+    InvoicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
