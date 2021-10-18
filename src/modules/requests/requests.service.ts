@@ -61,18 +61,21 @@ export class RequestsService {
     return result;
   }
 
-  async updateStatus(
-    request: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
-    status: RequestStatus,
-  ) {
+  async updateStatus(request: any, status: RequestStatus) {
     await this.update(request.id, { status });
     if (status === RequestStatus.APPROVED) {
-      const data = {
-        ...request.data(),
-      };
-      await this.customersService.create(data as unknown as CreateCustomerDto);
+      const newCustomer = request;
+      delete newCustomer.status;
+      delete newCustomer.createAt;
+      delete newCustomer.id;
+      delete newCustomer.lastUpdate;
+      await this.customersService.create(
+        newCustomer as unknown as CreateCustomerDto,
+      );
     }
-    return true;
+    request.id = request.dui;
+    request.status = status;
+    return request;
   }
 
   async update(id: string, updateRequestDto: UpdateRequestDto) {
