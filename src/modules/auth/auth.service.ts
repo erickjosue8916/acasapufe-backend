@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UserTypes } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,11 @@ export class AuthService {
       ...user,
       access_token,
     };
+
+    if (user.type === UserTypes.Employee) {
+      delete user.roles;
+      delete user.access_token;
+    }
     return result;
   }
 }
