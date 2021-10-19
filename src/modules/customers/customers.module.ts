@@ -10,11 +10,14 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from '../auth/jwt.strategy';
 import { jwtConstants } from '../auth/constants';
+import { InvoicesModule } from '../invoices/invoices.module';
+import { InvoicesService } from '../invoices/invoices.service';
 
 @Module({
   imports: [
     CounterLogsModule,
     UsersModule,
+    InvoicesModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
@@ -30,6 +33,7 @@ import { jwtConstants } from '../auth/constants';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    InvoicesService,
   ],
 })
 export class CustomersModule {}

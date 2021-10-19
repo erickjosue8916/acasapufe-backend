@@ -1,26 +1,57 @@
 import { Injectable } from '@nestjs/common';
+import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { Invoice } from './entities/invoice.entity';
 
 @Injectable()
 export class InvoicesService {
-  create(createInvoiceDto: CreateInvoiceDto) {
-    return 'This action adds a new invoice';
+  private collectionName: string;
+  private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
+
+  constructor(private readonly dbService: MainDbService) {
+    this.collectionName = dbService.collections.invoices;
+    this.collectionRef = dbService.getCollection(this.collectionName);
+  }
+  async create(createInvoiceDto: CreateInvoiceDto) {
+    const invoice = new Invoice(createInvoiceDto);
+
+    const invoiceData = invoice.toJson();
+    const invoiceCreated = await this.dbService.createDocument(
+      this.collectionName,
+      invoiceData,
+    );
+
+    const item = await invoiceCreated.get();
+    const result = {
+      id: item.id,
+      ...item.data(),
+    };
+    return result;
   }
 
-  findAll() {
-    return `This action returns all invoices`;
+  async findAll() {
+    const result = await this.collectionRef.get();
+    const items = await this.dbService.parseFirestoreItemsResponse(result);
+    return items;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} invoice`;
+  async findOne(id: string) {
+    const query = await this.collectionRef.doc(id).get();
+    const result = await this.dbService.getDataFromDocument(query);
+    return result;
   }
 
-  update(id: number, updateInvoiceDto: UpdateInvoiceDto) {
-    return `This action updates a #${id} invoice`;
+  async update(id: string, updateInvoiceDto: UpdateInvoiceDto) {
+    const document = await this.dbService.getDocumentById(
+      this.collectionName,
+      id,
+    );
+    const result = await this.dbService.update(document, updateInvoiceDto);
+    return result;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
     return `This action removes a #${id} invoice`;
   }
 }

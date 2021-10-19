@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
+import { Invoice } from '../invoices/entities/invoice.entity';
+import { InvoicesService } from '../invoices/invoices.service';
 import { CreateIssueDto } from '../issues/dto/create-issue.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserTypes } from '../users/entities/user.entity';
@@ -14,15 +16,18 @@ export class CustomersService {
   private collectionName: string;
   private collectionCounterLogs: string;
   private collectionIssues: string;
+  private collectionInvoices: string;
   private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
   constructor(
     private readonly dbService: MainDbService,
     private readonly usersService: UsersService,
+    private readonly invoicesService: InvoicesService,
   ) {
     this.collectionName = dbService.collections.customers;
     this.collectionCounterLogs = dbService.collections.customers;
     this.collectionIssues = dbService.collections.issues;
+    this.collectionInvoices = dbService.collections.issues;
     this.collectionRef = dbService.getCollection(this.collectionName);
   }
 
@@ -101,6 +106,13 @@ export class CustomersService {
     const customerData = customer.data();
     const collectionPath = `${this.collectionName}/${customerId}/${this.collectionCounterLogs}`;
     const currentDate = dayjs().format('YYYY-MM-DD');
+
+    if (log.count < customerData.totalCount) {
+      throw new HttpException(
+        `Impossible count!!! counter log is minor than current counter`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const totalFacture = log.count - customerData.totalCount;
     const newLog = await this.dbService.createDocumentWithCustomId(
       collectionPath,
@@ -117,6 +129,11 @@ export class CustomersService {
       lastUpdate: dayjs().format(),
       monthlyCapturePending: false,
     };
+
+    const invoice = await this.invoicesService.create({
+      customerId,
+      consumeCount: totalFacture,
+    });
 
     const customerRef = await this.collectionRef.doc(customer.id);
     this.dbService.update(customerRef, customerUpdatePayload);

@@ -6,5 +6,5 @@ export class CreateInvoiceDto {
   customerId: string;
 
   @IsNumber()
-  amount: string;
+  consumeCount: number;
 }

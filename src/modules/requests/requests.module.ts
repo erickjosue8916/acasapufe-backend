@@ -9,10 +9,13 @@ import { UsersService } from '../users/users.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../auth/constants';
 import { JwtStrategy } from '../auth/jwt.strategy';
+import { InvoicesModule } from '../invoices/invoices.module';
+import { InvoicesService } from '../invoices/invoices.service';
 
 @Module({
   imports: [
     CustomersModule,
+    InvoicesModule,
     UsersModule,
     JwtModule.register({
       secret: jwtConstants.secret,
@@ -26,6 +29,7 @@ import { JwtStrategy } from '../auth/jwt.strategy';
     CustomersService,
     UsersService,
     JwtStrategy,
+    InvoicesService,
   ],
 })
 export class RequestsModule {}
