@@ -36,4 +36,4 @@ substitutions:
   _CLOUD_RUN_PROJECT: acasapufe-backend
   _NODE_ENV: development
   _BUSINESS_SERVICE_PRICE: '8.25'
-  _BUSINESS_SERVICE_PRICE_UNIT: '15',
+  _BUSINESS_SERVICE_PRICE_UNIT: '15'
