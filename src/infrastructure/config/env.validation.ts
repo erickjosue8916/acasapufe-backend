@@ -42,6 +42,10 @@ class EnvironmentVariables {
   GCP_FIRESTORE_COLLECTION_USERS: string;
 
   @IsString()
+  @IsNotEmpty()
+  GCP_FIRESTORE_COLLECTION_INVOICES: string;
+
+  @IsString()
   @IsOptional()
   GOOGLE_APPLICATION_CREDENTIALS: string;
 
