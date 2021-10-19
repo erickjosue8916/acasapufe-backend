@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { GetInvoiceDto } from './dto/get-invoices-dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { Invoice } from './entities/invoice.entity';
 
@@ -30,9 +31,15 @@ export class InvoicesService {
     return result;
   }
 
-  async findAll() {
-    const result = await this.collectionRef.get();
-    const items = await this.dbService.parseFirestoreItemsResponse(result);
+  async findAll(query: GetInvoiceDto) {
+    const prepareQuery = this.collectionRef;
+    if (query.customerId)
+      prepareQuery.where('customerId', '==', query.customerId);
+    if (query.status) prepareQuery.where('status', '==', status);
+    prepareQuery.orderBy('createdAt', 'desc');
+
+    const response = await prepareQuery.get();
+    const items = this.dbService.parseFirestoreItemsResponse(response);
     return items;
   }
 
@@ -47,6 +54,7 @@ export class InvoicesService {
       this.collectionName,
       id,
     );
+
     const result = await this.dbService.update(document, updateInvoiceDto);
     return result;
   }

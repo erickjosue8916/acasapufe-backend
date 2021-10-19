@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as dayjs from 'dayjs';
+import { query } from 'express';
 import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
-import { Invoice } from '../invoices/entities/invoice.entity';
+import { GetInvoiceDto } from '../invoices/dto/get-invoices-dto';
+import { Invoice, InvoiceStatus } from '../invoices/entities/invoice.entity';
 import { InvoicesService } from '../invoices/invoices.service';
 import { CreateIssueDto } from '../issues/dto/create-issue.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -184,6 +186,15 @@ export class CustomersService {
       .where('customerId', '==', customer.id)
       .get();
     const items = this.dbService.parseFirestoreItemsResponse(response);
+    return items;
+  }
+
+  async getInvoices(
+    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+    query: GetInvoiceDto,
+  ) {
+    query.customerId = customer.id;
+    const items = await this.invoicesService.findAll(query);
     return items;
   }
 }

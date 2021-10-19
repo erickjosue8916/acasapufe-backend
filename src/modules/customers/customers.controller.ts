@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,6 +23,7 @@ import { Role } from 'src/infrastructure/config/auth/role.enum';
 import { Roles } from 'src/infrastructure/config/auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
+import { GetInvoiceDto } from '../invoices/dto/get-invoices-dto';
 import { CreateIssueDto } from '../issues/dto/create-issue.dto';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -154,6 +156,24 @@ export class CustomersController {
   @Roles(Role.CUSTOMER)
   async getIssues(@Param('id', CustomerByIdPipe) customerEntity: any) {
     const result = await this.customersService.getIssues(customerEntity);
+    return result;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Get(':id/invoices')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
+  async getInvoices(
+    @Param('id', CustomerByIdPipe) customerEntity: any,
+    @Query() query: GetInvoiceDto,
+  ) {
+    const result = await this.customersService.getInvoices(
+      customerEntity,
+      query,
+    );
     return result;
   }
 }
