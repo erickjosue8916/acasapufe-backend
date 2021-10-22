@@ -22,8 +22,8 @@ export class AuthService {
     };
 
     if (user.type === UserTypes.Employee) {
-      delete user.roles;
-      delete user.access_token;
+      delete result.roles;
+      delete result.access_token;
     }
     return result;
   }

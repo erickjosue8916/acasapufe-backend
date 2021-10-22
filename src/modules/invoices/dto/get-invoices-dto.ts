@@ -8,9 +8,9 @@ export class GetInvoiceDto {
   @IsOptional()
   @ApiProperty({
     name: 'status',
-    type: InvoiceStatus,
+    enum: InvoiceStatus,
   })
-  status: string;
+  status: InvoiceStatus;
 
   @IsString()
   @IsNotEmpty()
