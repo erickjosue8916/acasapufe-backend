@@ -14,8 +14,8 @@ import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { GetInvoiceDto } from './dto/get-invoices-dto';
 import { ApiExcludeEndpoint, ApiHideProperty, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('invoices')
-@Controller('invoices')
+@ApiTags('api/v1/invoices')
+@Controller('api/v1/invoices')
 export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
 

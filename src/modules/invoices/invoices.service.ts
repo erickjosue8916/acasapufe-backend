@@ -35,7 +35,7 @@ export class InvoicesService {
     const prepareQuery = this.collectionRef;
     if (query.customerId)
       prepareQuery.where('customerId', '==', query.customerId);
-    if (query.status) prepareQuery.where('status', '==', status);
+    if (query.status) prepareQuery.where('status', '==', query.status);
     prepareQuery.orderBy('createdAt', 'desc');
 
     const response = await prepareQuery.get();
