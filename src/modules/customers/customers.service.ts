@@ -78,12 +78,12 @@ export class CustomersService {
       .where('monthlyCapturePending', '==', true)
       .get();
     const items = await this.dbService.parseFirestoreItemsResponse(result);
-    const response = items.map((item) => {
+    const data = items.map((item) => {
       delete item.dui;
       delete item.createAt;
       return item;
     });
-    return response;
+    return { data };
   }
 
   async findOne(id: string) {
