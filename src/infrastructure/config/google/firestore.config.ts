@@ -4,6 +4,7 @@ export interface FirestoreCollectionsConfig {
   counter_logs: string;
   requests: string;
   users: string;
+  invoices: string;
 }
 
 export interface FirestoreConfig {
@@ -19,5 +20,6 @@ export const firestore = (): FirestoreConfig => ({
     counter_logs: process.env.GCP_FIRESTORE_COLLECTION_COUNTER_LOGS,
     requests: process.env.GCP_FIRESTORE_COLLECTION_REQUESTS,
     users: process.env.GCP_FIRESTORE_COLLECTION_USERS,
+    invoices: process.env.GCP_FIRESTORE_COLLECTION_INVOICES,
   },
 });

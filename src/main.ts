@@ -7,6 +7,8 @@ import { VersioningType } from '@nestjs/common';
 async function bootstrap() {
   try {
     const port = process.env.PORT || 80;
+
+    console.log(port);
     const app = await NestFactory.create(AppModule);
 
     swaggerSetup(app, `docs`);

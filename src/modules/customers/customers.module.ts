@@ -5,10 +5,35 @@ import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CounterLogsModule } from '../counter-logs/counter-logs.module';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
+import { RolesGuard } from 'src/infrastructure/config/auth/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtStrategy } from '../auth/jwt.strategy';
+import { jwtConstants } from '../auth/constants';
+import { InvoicesModule } from '../invoices/invoices.module';
+import { InvoicesService } from '../invoices/invoices.service';
 
 @Module({
-  imports: [CounterLogsModule, UsersModule],
+  imports: [
+    CounterLogsModule,
+    UsersModule,
+    InvoicesModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '60s' },
+    }),
+  ],
   controllers: [CustomersController],
-  providers: [CustomersService, MainDbService, UsersService],
+  providers: [
+    CustomersService,
+    MainDbService,
+    UsersService,
+    JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+    InvoicesService,
+  ],
 })
 export class CustomersModule {}

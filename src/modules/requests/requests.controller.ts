@@ -6,13 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
-import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExcludeEndpoint,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ValidationCustomerDuiDuplicatedPipe } from '../customers/pipes/validation-customer-dui-duplicated.pipe';
 import { RequestByIdPipe } from './pipes/request-by-id.pipe';
+import { RequestStatus } from './entities/request.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from 'src/infrastructure/config/auth/roles.decorator';
+import { Role } from 'src/infrastructure/config/auth/role.enum';
 
 @Controller('api/v1/requests')
 @ApiTags('requests')
@@ -28,21 +38,47 @@ export class RequestsController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   findAll() {
     return this.requestsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.requestsService.findOne(id);
+  @Get('pending')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
+  async getPending() {
+    return await this.requestsService.getPending();
   }
 
-  @Patch(':id')
+  @Get(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
+  async findOne(@Param('id', RequestByIdPipe) request) {
+    return request;
+  }
+
+  @ApiParam({
+    name: 'id',
+    description: 'Request Id saved in database',
+  })
+  @ApiParam({
+    name: 'status',
+    description: 'New Request Status',
+    enum: RequestStatus,
+  })
+  @Patch(':id/:status')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   update(
-    @Param('id', RequestByIdPipe) id: string,
-    @Body() updateRequestDto: UpdateRequestDto,
+    @Param('id', RequestByIdPipe) request,
+    @Param('status') status: RequestStatus,
   ) {
-    return this.requestsService.update(id, updateRequestDto);
+    return this.requestsService.updateStatus(request, status);
   }
 
   @Delete(':id')

@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as dayjs from 'dayjs';
+import { query } from 'express';
 import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
+import { GetInvoiceDto } from '../invoices/dto/get-invoices-dto';
+import { Invoice, InvoiceStatus } from '../invoices/entities/invoice.entity';
+import { InvoicesService } from '../invoices/invoices.service';
+import { CreateIssueDto } from '../issues/dto/create-issue.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserTypes } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -12,14 +17,19 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 export class CustomersService {
   private collectionName: string;
   private collectionCounterLogs: string;
+  private collectionIssues: string;
+  private collectionInvoices: string;
   private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
   constructor(
     private readonly dbService: MainDbService,
     private readonly usersService: UsersService,
+    private readonly invoicesService: InvoicesService,
   ) {
     this.collectionName = dbService.collections.customers;
     this.collectionCounterLogs = dbService.collections.customers;
+    this.collectionIssues = dbService.collections.issues;
+    this.collectionInvoices = dbService.collections.issues;
     this.collectionRef = dbService.getCollection(this.collectionName);
   }
 
@@ -63,8 +73,23 @@ export class CustomersService {
     return items;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} customer`;
+  async getPending() {
+    const result = await this.collectionRef
+      .where('monthlyCapturePending', '==', true)
+      .get();
+    const items = await this.dbService.parseFirestoreItemsResponse(result);
+    const data = items.map((item) => {
+      delete item.dui;
+      delete item.createAt;
+      return item;
+    });
+    return { data };
+  }
+
+  async findOne(id: string) {
+    const query = await this.collectionRef.doc(id).get();
+    const result = await this.dbService.getDataFromDocument(query);
+    return result;
   }
 
   async update(id: string, updateCustomerDto: UpdateCustomerDto) {
@@ -88,6 +113,13 @@ export class CustomersService {
     const customerData = customer.data();
     const collectionPath = `${this.collectionName}/${customerId}/${this.collectionCounterLogs}`;
     const currentDate = dayjs().format('YYYY-MM-DD');
+
+    if (log.count < customerData.totalCount) {
+      throw new HttpException(
+        `Impossible count!!! counter log is minor than current counter`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const totalFacture = log.count - customerData.totalCount;
     const newLog = await this.dbService.createDocumentWithCustomId(
       collectionPath,
@@ -105,6 +137,11 @@ export class CustomersService {
       monthlyCapturePending: false,
     };
 
+    const invoice = await this.invoicesService.create({
+      customerId,
+      consumeCount: totalFacture,
+    });
+
     const customerRef = await this.collectionRef.doc(customer.id);
     this.dbService.update(customerRef, customerUpdatePayload);
     const customerWithDataUpdated = Object.assign(
@@ -120,6 +157,49 @@ export class CustomersService {
     const collectionPath = `${this.collectionName}/${customer.id}/${this.collectionCounterLogs}`;
     const result = await this.dbService.getCollection(collectionPath).get();
     const items = this.dbService.parseFirestoreItemsResponse(result);
+    return items;
+  }
+
+  async createIssue(
+    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+    data: CreateIssueDto,
+  ) {
+    const customerId = customer.id;
+    const currentDate = dayjs().format('YYYY-MM-DD');
+    const payload = {
+      customerId,
+      ...data,
+      createAt: currentDate,
+      isResolved: false,
+    };
+    const newIssue = await this.dbService.createDocument(
+      this.collectionIssues,
+      payload,
+    );
+    const result = {
+      id: newIssue.id,
+      ...payload,
+    };
+    return result;
+  }
+
+  async getIssues(
+    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+  ) {
+    const response = await this.dbService
+      .getCollection(this.collectionIssues)
+      .where('customerId', '==', customer.id)
+      .get();
+    const items = this.dbService.parseFirestoreItemsResponse(response);
+    return items;
+  }
+
+  async getInvoices(
+    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+    query: GetInvoiceDto,
+  ) {
+    query.customerId = customer.id;
+    const items = await this.invoicesService.findAll(query);
     return items;
   }
 }

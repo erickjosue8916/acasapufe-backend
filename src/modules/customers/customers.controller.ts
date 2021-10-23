@@ -6,15 +6,25 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
+  ApiHeader,
+  ApiHeaders,
   ApiHideProperty,
   ApiParam,
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
+import { Role } from 'src/infrastructure/config/auth/role.enum';
+import { Roles } from 'src/infrastructure/config/auth/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateCounterLogDto } from '../counter-logs/dto/create-counter-log.dto';
+import { GetInvoiceDto } from '../invoices/dto/get-invoices-dto';
+import { CreateIssueDto } from '../issues/dto/create-issue.dto';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -27,6 +37,9 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   create(
     @Body(ValidationCustomerDuiDuplicatedPipe)
     createCustomerDto: CreateCustomerDto,
@@ -37,6 +50,11 @@ export class CustomersController {
   @Get()
   findAll() {
     return this.customersService.findAll();
+  }
+
+  @Get('pending')
+  getPending() {
+    return this.customersService.getPending();
   }
 
   @Get(':id')
@@ -82,6 +100,9 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/counter-logs')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async getCounterLogs(@Param('id', CustomerByIdPipe) customer) {
     const result = await this.customersService.getCounterLogs(customer);
     return result;
@@ -91,6 +112,9 @@ export class CustomersController {
     name: 'id',
   })
   @Get(':id/counter-logs/char')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
   async getCounterLogsChar(@Param('id', CustomerByIdPipe) customer) {
     const result = await this.customersService.getCounterLogs(customer);
     const char = result.reduce(
@@ -103,5 +127,53 @@ export class CustomersController {
       { months: [], values: [] },
     );
     return char;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Post(':id/issues')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
+  async createIssue(
+    @Param('id', CustomerByIdPipe) customerEntity: any,
+    @Body() issue: CreateIssueDto,
+  ) {
+    const result = await this.customersService.createIssue(
+      customerEntity,
+      issue,
+    );
+    return result;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Get(':id/issues')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
+  async getIssues(@Param('id', CustomerByIdPipe) customerEntity: any) {
+    const result = await this.customersService.getIssues(customerEntity);
+    return result;
+  }
+
+  @ApiParam({
+    name: 'id',
+  })
+  @Get(':id/invoices')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
+  async getInvoices(
+    @Param('id', CustomerByIdPipe) customerEntity: any,
+    @Query() query: GetInvoiceDto,
+  ) {
+    const result = await this.customersService.getInvoices(
+      customerEntity,
+      query,
+    );
+    return result;
   }
 }

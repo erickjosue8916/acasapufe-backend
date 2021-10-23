@@ -6,6 +6,8 @@ export const swaggerSetup = (app: INestApplication, documentPath: string) => {
     .setTitle(`ACASAPUFE REST API`)
     .setDescription(`Rest Api to manage all resources of ACASAPUFE Services`)
     .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('auth')
     .addTag('customers', 'Module of customers for company')
     .addTag('issues', 'Pending ask of users')
     .addTag('users', 'Accounting with access for project')
