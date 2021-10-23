@@ -42,14 +42,25 @@ class EnvironmentVariables {
   GCP_FIRESTORE_COLLECTION_USERS: string;
 
   @IsString()
+  @IsNotEmpty()
+  GCP_FIRESTORE_COLLECTION_INVOICES: string;
+
+  @IsString()
   @IsOptional()
   GOOGLE_APPLICATION_CREDENTIALS: string;
 
   @IsString()
+  @IsNotEmpty()
   JWT_SECRET_KEY: string;
 
   @IsNumber()
   JWT_TOKEN_DURATION_MS: number;
+
+  @IsNumber()
+  BUSINESS_SERVICE_PRICE: number;
+
+  @IsNumber()
+  BUSINESS_SERVICE_PRICE_UNIT: number;
 }
 
 export const validateEnv = (config: Record<string, unknown>) => {

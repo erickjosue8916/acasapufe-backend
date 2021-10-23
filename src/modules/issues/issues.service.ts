@@ -39,7 +39,9 @@ export class IssuesService {
   }
 
   async findOne(id: string) {
-    return `This action returns a #${id} issue`;
+    const query = await this.collectionRef.doc(id).get();
+    const result = await this.dbService.getDataFromDocument(query);
+    return result;
   }
 
   async update(id: string, updateIssueDto: UpdateIssueDto) {

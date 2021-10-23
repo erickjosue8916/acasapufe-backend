@@ -41,11 +41,4 @@ export class CreateCustomerDto {
   })
   @IsNotEmpty()
   locationReference: string;
-
-  @IsNumber()
-  @ApiProperty({
-    name: 'orderReference',
-    example: 1,
-  })
-  orderReference: number;
 }
