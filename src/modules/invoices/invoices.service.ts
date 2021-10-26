@@ -36,6 +36,7 @@ export class InvoicesService {
   async findAll(query: GetInvoiceDto) {
     const prepareQuery = this.collectionRef;
     let response;
+    let customer;
     if (query.customerId && query.status) {
       response = await prepareQuery
         .where('customerId', '==', query.customerId)
@@ -53,7 +54,24 @@ export class InvoicesService {
         .orderBy('createdAt', 'desc')
         .get();
     }
-    const items = this.dbService.parseFirestoreItemsResponse(response);
+
+    if (query.customerId) {
+      const customerRequest = await this.dbService
+        .getCollection(this.customerCollection)
+        .doc(query.customerId)
+        .get();
+      customer = this.dbService.getDataFromDocument(customerRequest);
+    }
+
+    const items = await this.dbService.parseFirestoreItemsResponse(response);
+    if (customer) {
+      return items.map((item) => {
+        return {
+          ...item,
+          customer,
+        };
+      });
+    }
     return items;
   }
 
