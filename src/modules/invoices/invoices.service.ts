@@ -8,10 +8,12 @@ import { Invoice } from './entities/invoice.entity';
 @Injectable()
 export class InvoicesService {
   private collectionName: string;
+  private customerCollection: string;
   private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
   constructor(private readonly dbService: MainDbService) {
     this.collectionName = dbService.collections.invoices;
+    this.customerCollection = dbService.collections.customers;
     this.collectionRef = dbService.getCollection(this.collectionName);
   }
   async create(createInvoiceDto: CreateInvoiceDto) {
@@ -58,7 +60,13 @@ export class InvoicesService {
   async findOne(id: string) {
     const query = await this.collectionRef.doc(id).get();
     const result = await this.dbService.getDataFromDocument(query);
-    return result;
+
+    const customer = await this.dbService
+      .getCollection(this.customerCollection)
+      .doc(result.customerId)
+      .get();
+    const customerData = this.dbService.getDataFromDocument(customer);
+    return { ...result, customer: customerData };
   }
 
   async update(id: string, updateInvoiceDto: UpdateInvoiceDto) {
