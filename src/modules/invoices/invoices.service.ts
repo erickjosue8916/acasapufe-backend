@@ -8,10 +8,12 @@ import { Invoice } from './entities/invoice.entity';
 @Injectable()
 export class InvoicesService {
   private collectionName: string;
+  private customerCollection: string;
   private collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
   constructor(private readonly dbService: MainDbService) {
     this.collectionName = dbService.collections.invoices;
+    this.customerCollection = dbService.collections.customers;
     this.collectionRef = dbService.getCollection(this.collectionName);
   }
   async create(createInvoiceDto: CreateInvoiceDto) {
@@ -33,20 +35,56 @@ export class InvoicesService {
 
   async findAll(query: GetInvoiceDto) {
     const prepareQuery = this.collectionRef;
-    if (query.customerId)
-      prepareQuery.where('customerId', '==', query.customerId);
-    if (query.status) prepareQuery.where('status', '==', query.status);
-    prepareQuery.orderBy('createdAt', 'desc');
+    let response;
+    let customer;
+    if (query.customerId && query.status) {
+      response = await prepareQuery
+        .where('customerId', '==', query.customerId)
+        .where('status', '==', query.status)
+        .orderBy('createdAt', 'desc')
+        .get();
+    } else if (query.status) {
+      response = await prepareQuery
+        .where('status', '==', query.status)
+        .orderBy('createdAt', 'desc')
+        .get();
+    } else {
+      response = await prepareQuery
+        .where('customerId', '==', query.customerId)
+        .orderBy('createdAt', 'desc')
+        .get();
+    }
 
-    const response = await prepareQuery.get();
-    const items = this.dbService.parseFirestoreItemsResponse(response);
+    if (query.customerId) {
+      const customerRequest = await this.dbService
+        .getCollection(this.customerCollection)
+        .doc(query.customerId)
+        .get();
+      customer = this.dbService.getDataFromDocument(customerRequest);
+    }
+
+    const items = await this.dbService.parseFirestoreItemsResponse(response);
+    if (customer) {
+      return items.map((item) => {
+        return {
+          ...item,
+          customer,
+        };
+      });
+    }
     return items;
   }
 
   async findOne(id: string) {
     const query = await this.collectionRef.doc(id).get();
     const result = await this.dbService.getDataFromDocument(query);
-    return result;
+
+    const customer = await this.dbService
+      .getCollection(this.customerCollection)
+      .doc(result.customerId)
+      .get();
+    const customerData = this.dbService.getDataFromDocument(customer);
+    return { ...result, customer: customerData };
   }
 
   async update(id: string, updateInvoiceDto: UpdateInvoiceDto) {
