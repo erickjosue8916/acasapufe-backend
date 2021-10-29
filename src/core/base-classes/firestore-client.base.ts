@@ -34,7 +34,7 @@ export class FirestoreClient extends GoogleClient<Firestore> {
 
   public getDataFromDocument(
     document: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
-  ) {
+  ): any {
     const data = {
       id: document.id,
       ...document.data(),
