@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Query,
+  Headers,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -55,6 +57,26 @@ export class CustomersController {
   @Get('pending')
   getPending() {
     return this.customersService.getPending();
+  }
+
+  @Post('/issues')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
+  async createIssue(@Body() issue: CreateIssueDto, @Request() req) {
+    const { user } = req;
+    const result = await this.customersService.createIssue(user, issue);
+    return result;
+  }
+
+  @Get('/issues')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.CUSTOMER)
+  async getIssues(@Request() req) {
+    const { user } = req;
+    const result = await this.customersService.getIssues(user);
+    return result;
   }
 
   @Get(':id')
@@ -127,36 +149,6 @@ export class CustomersController {
       { months: [], values: [] },
     );
     return char;
-  }
-
-  @ApiParam({
-    name: 'id',
-  })
-  @Post(':id/issues')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Roles(Role.CUSTOMER)
-  async createIssue(
-    @Param('id', CustomerByIdPipe) customerEntity: any,
-    @Body() issue: CreateIssueDto,
-  ) {
-    const result = await this.customersService.createIssue(
-      customerEntity,
-      issue,
-    );
-    return result;
-  }
-
-  @ApiParam({
-    name: 'id',
-  })
-  @Get(':id/issues')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Roles(Role.CUSTOMER)
-  async getIssues(@Param('id', CustomerByIdPipe) customerEntity: any) {
-    const result = await this.customersService.getIssues(customerEntity);
-    return result;
   }
 
   @ApiParam({
