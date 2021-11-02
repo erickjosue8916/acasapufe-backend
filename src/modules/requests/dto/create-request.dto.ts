@@ -28,11 +28,11 @@ export class CreateRequestDto {
 
   @IsString()
   @ApiProperty({
-    name: 'telephone',
+    name: 'phone',
     example: '+50371021375',
   })
   @IsNotEmpty()
-  telephone: string;
+  phone: string;
 
   @IsString()
   @ApiProperty({

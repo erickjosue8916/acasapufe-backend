@@ -28,7 +28,6 @@ export class IssuesController {
   }
 
   @Patch(':id')
-  @ApiExcludeEndpoint()
   update(@Param('id') id: string, @Body() updateIssueDto: UpdateIssueDto) {
     return this.issuesService.update(id, updateIssueDto);
   }
