@@ -6,8 +6,7 @@ COPY package.json .
 COPY yarn.lock .
 
 RUN apk update && apk add --no-cache --virtual .build-deps make gcc g++ python \
-    && rm -rf node_modules && yarn install --frozen-lockfile \
-    && apk del .build-deps
+    && rm -rf node_modules && yarn install --frozen-lockfile
 
 COPY . .
 
