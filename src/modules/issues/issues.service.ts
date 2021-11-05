@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { MainDbService } from 'src/common/main-db/main-db.service';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
+import { ISSUE_STATUS } from './entities/issue.entity';
 
 @Injectable()
 export class IssuesService {
@@ -17,7 +18,7 @@ export class IssuesService {
   async create(createIssueDto: CreateIssueDto) {
     const payload = {
       ...createIssueDto,
-      isResolved: false,
+      status: ISSUE_STATUS.PENDING,
       createAt: dayjs().format(),
     };
     const result = await this.dbService.createDocument<any>(
