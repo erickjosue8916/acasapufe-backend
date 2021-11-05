@@ -5,8 +5,8 @@ WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
 
-#RUN apk update && apk add --no-cache --virtual .build-deps make gcc g++ python \
-#    && rm -rf node_modules && yarn install --frozen-lockfile
+RUN apk update && apk add --no-cache --virtual .build-deps make gcc g++ python3 \
+    && rm -rf node_modules && yarn install --frozen-lockfile
 
 COPY . .
 
