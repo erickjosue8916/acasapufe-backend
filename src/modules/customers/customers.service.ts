@@ -7,6 +7,7 @@ import { GetInvoiceDto } from '../invoices/dto/get-invoices-dto';
 import { Invoice, InvoiceStatus } from '../invoices/entities/invoice.entity';
 import { InvoicesService } from '../invoices/invoices.service';
 import { CreateIssueDto } from '../issues/dto/create-issue.dto';
+import { ISSUE_STATUS } from '../issues/entities/issue.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserTypes } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -170,7 +171,7 @@ export class CustomersService {
       customerId,
       ...data,
       createAt: currentDate,
-      isResolved: false,
+      status: ISSUE_STATUS.PENDING,
     };
     const newIssue = await this.dbService.createDocument(
       this.collectionIssues,
