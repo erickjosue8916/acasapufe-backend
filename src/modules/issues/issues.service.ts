@@ -45,6 +45,8 @@ export class IssuesService {
       return customerIds;
     }, []);
 
+    console.log(customerIds);
+
     const customers = [];
     for await (const id of customerIds) {
       const customerRequest = await this.dbService
@@ -56,10 +58,10 @@ export class IssuesService {
     }
 
     const response = items.map((item) => {
-      const customer = customers.filter(
+      const [customer] = customers.filter(
         (customer) => customer.id === item.customerId,
       );
-      item.customer = customer;
+      if (customer) item.customer = customer;
       return item;
     });
     return response;
