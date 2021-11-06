@@ -106,11 +106,8 @@ export class CustomersService {
     return `This action removes a #${id} customer`;
   }
 
-  async createCounterLog(
-    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
-    log: CreateCounterLogDto,
-  ) {
-    const customerId = customer.id;
+  async createCounterLog(customer: any, log: CreateCounterLogDto) {
+    const customerId = customer.username;
     const customerData = customer.data();
     const collectionPath = `${this.collectionName}/${customerId}/${this.collectionCounterLogs}`;
     const currentDate = dayjs().format('YYYY-MM-DD');
@@ -161,11 +158,8 @@ export class CustomersService {
     return items;
   }
 
-  async createIssue(
-    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
-    data: CreateIssueDto,
-  ) {
-    const customerId = customer.id;
+  async createIssue(customer: any, data: CreateIssueDto) {
+    const customerId = customer.username;
     const currentDate = dayjs().format('YYYY-MM-DD');
     const payload = {
       customerId,
@@ -184,22 +178,18 @@ export class CustomersService {
     return result;
   }
 
-  async getIssues(
-    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
-  ) {
+  async getIssues(customer: any) {
+    const customerId = customer.username;
     const response = await this.dbService
       .getCollection(this.collectionIssues)
-      .where('customerId', '==', customer.id)
+      .where('customerId', '==', customerId)
       .get();
     const items = this.dbService.parseFirestoreItemsResponse(response);
     return items;
   }
 
-  async getInvoices(
-    customer: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
-    query: GetInvoiceDto,
-  ) {
-    query.customerId = customer.id;
+  async getInvoices(customer: any, query: GetInvoiceDto) {
+    query.customerId = customer.username;
     const items = await this.invoicesService.findAll(query);
     return items;
   }
