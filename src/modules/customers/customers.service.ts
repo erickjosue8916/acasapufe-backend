@@ -107,8 +107,8 @@ export class CustomersService {
   }
 
   async createCounterLog(customer: any, log: CreateCounterLogDto) {
-    const customerId = customer.username;
     const customerData = customer.data();
+    const customerId = customer.id;
     const collectionPath = `${this.collectionName}/${customerId}/${this.collectionCounterLogs}`;
     const currentDate = dayjs().format('YYYY-MM-DD');
 
@@ -124,7 +124,7 @@ export class CustomersService {
       currentDate,
       {
         customerId,
-        date: currentDate,
+        date: log.date || currentDate,
         count: log.count,
       },
     );
@@ -146,6 +146,9 @@ export class CustomersService {
       customer.data(),
       customerUpdatePayload,
     );
+    delete customerWithDataUpdated.createdAt;
+    delete customerWithDataUpdated.orderReference;
+    delete customerWithDataUpdated.dui;
     return customerWithDataUpdated;
   }
 

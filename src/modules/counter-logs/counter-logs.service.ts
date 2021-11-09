@@ -20,8 +20,9 @@ export class CounterLogsService {
     const currentDate = dayjs().format('YYYY-MM-DD');
     const payload = {
       ...createCounterLogDto,
-      createAt: now,
     };
+
+    if (!payload.date) payload.date = currentDate;
     const result = await this.dbService.createDocumentWithCustomId<any>(
       this.collectionName,
       currentDate,
